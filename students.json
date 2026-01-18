@@ -12,5 +12,12 @@
         "email": "test2@mail.com",
         "phone": "1234567890",
         "status": "On Leave"
+    },
+    {
+        "id": 3,
+        "name": "avb",
+        "email": "mail@mail.com",
+        "phone": "12334567890",
+        "status": "Active"
     }
 ]

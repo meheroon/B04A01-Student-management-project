@@ -6,70 +6,100 @@ $students = $manager->getAllStudents();
 
 $success = $_GET['success'] ?? '';
 $error = $_GET['error'] ?? '';
+
+function badgeClass($status) {
+  $s = strtolower(trim($status));
+  if ($s === 'active') return 'badge active';
+  if ($s === 'on leave') return 'badge onleave';
+  if ($s === 'graduated') return 'badge graduated';
+  return 'badge inactive';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Management</title>
-  <style>
-    body{font-family: Arial, sans-serif; margin:20px;}
-    table{width:100%; border-collapse:collapse;}
-    th,td{border:1px solid #ddd; padding:10px; text-align:left;}
-    th{background:#f5f5f5;}
-    .actions a{margin-right:8px;}
-    .msg{padding:10px; margin-bottom:10px; border-radius:6px;}
-    .success{background:#e9f7ef; border:1px solid #a9dfbf;}
-    .error{background:#fdecea; border:1px solid #f5b7b1;}
-    .topbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
-    .btn{display:inline-block; padding:8px 12px; border:1px solid #333; text-decoration:none; border-radius:6px;}
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student List</title>
+  <link rel="stylesheet" href="assests/css/style.css">
 </head>
 <body>
+  <div class="page">
+    <nav class="navbar">
+      <div class="container">
+        <div class="navbar-top">
+          <div class="brand">STUDENT.IO</div>
+          <div></div>
+        </div>
+        <div class="header-title">Student List</div>
+      </div>
+    </nav>
 
-  <div class="topbar">
-    <h2>Student List</h2>
-    <a class="btn" href="create.php">+ Add Student</a>
+    <main class="main">
+      <div class="container">
+        <div class="card">
+          <div class="card-top">
+            <p>A list of all students currently enrolled including their name and email address.</p>
+            <a class="btn" href="create.php">Add Student</a>
+          </div>
+
+          <?php if ($success): ?>
+            <div class="msg success"><?= htmlspecialchars($success) ?></div>
+          <?php endif; ?>
+
+          <?php if ($error): ?>
+            <div class="msg error"><?= htmlspecialchars($error) ?></div>
+          <?php endif; ?>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="min-width:180px;">Name</th>
+                  <th style="min-width:220px;">Email</th>
+                  <th style="min-width:160px;">Phone</th>
+                  <th style="min-width:140px;">Status</th>
+                  <th style="min-width:140px; text-align:right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php if (empty($students)): ?>
+                  <tr>
+                    <td colspan="5">No students found.</td>
+                  </tr>
+                <?php else: ?>
+                  <?php foreach ($students as $s): ?>
+                    <tr>
+                      <td><strong><?= htmlspecialchars($s['name']) ?></strong></td>
+                      <td><?= htmlspecialchars($s['email']) ?></td>
+                      <td><?= htmlspecialchars($s['phone']) ?></td>
+                      <td>
+                        <span class="<?= badgeClass($s['status']) ?>">
+                          <?= htmlspecialchars($s['status']) ?>
+                        </span>
+                      </td>
+                      <td style="text-align:right;">
+                        <a class="action-link edit" href="edit.php?id=<?= urlencode($s['id']) ?>">Edit</a>
+                        <a class="action-link delete"
+                           href="delete.php?id=<?= urlencode($s['id']) ?>"
+                           onclick="return confirm('Are you sure you want to delete this student?');">
+                           Delete
+                        </a>
+                      </td>
+                    </tr>
+                  <?php endforeach; ?>
+                <?php endif; ?>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      &copy; 2025 Student Management System.
+    </footer>
   </div>
-
-  <?php if ($success): ?>
-    <div class="msg success"><?= htmlspecialchars($success) ?></div>
-  <?php endif; ?>
-
-  <?php if ($error): ?>
-    <div class="msg error"><?= htmlspecialchars($error) ?></div>
-  <?php endif; ?>
-
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Status</th><th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php if (empty($students)): ?>
-        <tr><td colspan="6">No students found.</td></tr>
-      <?php else: ?>
-        <?php foreach ($students as $s): ?>
-          <tr>
-            <td><?= htmlspecialchars($s['id']) ?></td>
-            <td><?= htmlspecialchars($s['name']) ?></td>
-            <td><?= htmlspecialchars($s['email']) ?></td>
-            <td><?= htmlspecialchars($s['phone']) ?></td>
-            <td><?= htmlspecialchars($s['status']) ?></td>
-            <td class="actions">
-              <a href="edit.php?id=<?= urlencode($s['id']) ?>">Edit</a>
-              <a href="delete.php?id=<?= urlencode($s['id']) ?>"
-                 onclick="return confirm('Are you sure you want to delete this student?');">
-                 Delete
-              </a>
-            </td>
-          </tr>
-        <?php endforeach; ?>
-      <?php endif; ?>
-    </tbody>
-  </table>
-
 </body>
 </html>

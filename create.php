@@ -5,72 +5,94 @@ $manager = new StudentManager(__DIR__ . '/students.json');
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    [$ok, $msg] = $manager->create($_POST);
-
-    if ($ok) {
-        header("Location: index.php?success=" . urlencode($msg));
-        exit;
-    } else {
-        $error = $msg;
-    }
+  [$ok, $msg] = $manager->create($_POST);
+  if ($ok) {
+    header("Location: index.php?success=" . urlencode($msg));
+    exit;
+  }
+  $error = $msg;
 }
 
 function old($key) {
-    return htmlspecialchars($_POST[$key] ?? '');
+  return htmlspecialchars($_POST[$key] ?? '');
+}
+function selected($value) {
+  $current = $_POST['status'] ?? 'Active';
+  return ($current === $value) ? 'selected' : '';
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Create Student</title>
-  <style>
-    body{font-family: Arial, sans-serif; margin:20px;}
-    .box{max-width:520px;}
-    label{display:block; margin-top:12px;}
-    input,select{width:100%; padding:10px; margin-top:6px;}
-    .btn{margin-top:14px; padding:10px 12px; border:1px solid #333; border-radius:6px; background:#fff; cursor:pointer;}
-    .msg{padding:10px; margin-bottom:10px; border-radius:6px;}
-    .error{background:#fdecea; border:1px solid #f5b7b1;}
-    a{display:inline-block; margin-bottom:10px;}
-  </style>
+  <link rel="stylesheet" href="assests/css/style.css" />
 </head>
 <body>
+  <div class="page">
+    <nav class="navbar">
+      <div class="container">
+        <div class="navbar-top">
+          <div class="brand">STUDENT.IO</div>
+          <div></div>
+        </div>
+        <div class="header-title">Student Create</div>
+      </div>
+    </nav>
 
-  <a href="index.php">← Back</a>
-  <div class="box">
-    <h2>Create Student</h2>
+    <main class="main">
+      <div class="container">
+        <div class="card form-card">
 
-    <?php if ($error): ?>
-      <div class="msg error"><?= htmlspecialchars($error) ?></div>
-    <?php endif; ?>
+          <?php if ($error): ?>
+            <div class="msg error"><?= htmlspecialchars($error) ?></div>
+          <?php endif; ?>
 
-    <form method="POST">
-      <label>Name</label>
-      <input type="text" name="name" value="<?= old('name') ?>" required>
+          <h2 class="form-title">Student Information</h2>
+          <p class="form-subtitle">Add the student's personal details and enrollment status.</p>
 
-      <label>Email</label>
-      <input type="email" name="email" value="<?= old('email') ?>" required>
+          <form method="POST">
+            <div class="form-grid">
+              <div class="field">
+                <label for="name">Name</label>
+                <input id="name" name="name" type="text" placeholder="John Doe" value="<?= old('name') ?>" required />
+              </div>
 
-      <label>Phone</label>
-      <input type="tel" name="phone" pattern="[0-9]+" value="<?= old('phone') ?>" required>
+              <div class="field">
+                <label for="email">Email address</label>
+                <input id="email" name="email" type="email" placeholder="john@example.com" value="<?= old('email') ?>" required />
+              </div>
 
-      <label>Status</label>
-      <select name="status" required>
-        <?php
-          $statuses = ["Active", "On Leave", "Graduated", "Inactive"];
-          $selected = $_POST['status'] ?? '';
-          foreach ($statuses as $st) {
-            $isSel = ($selected === $st) ? 'selected' : '';
-            echo "<option value=\"".htmlspecialchars($st)."\" $isSel>".htmlspecialchars($st)."</option>";
-          }
-        ?>
-      </select>
+              <div class="field">
+                <label for="phone">Phone Number</label>
+                <input id="phone" name="phone" type="text" placeholder="+880 1712-123456" value="<?= old('phone') ?>" required />
+              </div>
 
-      <button class="btn" type="submit">Save</button>
-    </form>
+              <div class="field">
+                <label for="status">Enrollment Status</label>
+                <select id="status" name="status" required>
+                  <option value="Active" <?= selected('Active') ?>>Active</option>
+                  <option value="On Leave" <?= selected('On Leave') ?>>On Leave</option>
+                  <option value="Graduated" <?= selected('Graduated') ?>>Graduated</option>
+                  <option value="Inactive" <?= selected('Inactive') ?>>Inactive</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-footer">
+              <a class="btn secondary" href="index.php">Cancel</a>
+              <button class="btn" type="submit">Save Changes</button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      &copy; 2025 Student Management System.
+    </footer>
   </div>
-
 </body>
 </html>
